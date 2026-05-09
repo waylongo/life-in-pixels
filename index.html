@@ -1,0 +1,2631 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>人生 A4 纸 | Life in Pixels</title>
+    <style>
+      :root {
+        --bg: #f3f1eb;
+        --paper: #fffdf8;
+        --paper-soft: #faf7ef;
+        --ink: #18212b;
+        --muted: #69717c;
+        --faint: #8d96a1;
+        --line: #ded7ca;
+        --line-strong: #c9beae;
+        --panel: rgba(255, 253, 248, 0.92);
+        --shadow: 0 24px 70px rgba(43, 37, 28, 0.16);
+        --future: #fffdf8;
+        --elapsed: #d4d8dc;
+        --current: #1d2a35;
+        --danger: #a84f4f;
+        --success: #557e62;
+        --accent: #bd7d3a;
+        --grid-gap: 2px;
+        --radius: 8px;
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        background: var(--bg);
+        color: var(--ink);
+      }
+
+      body {
+        min-height: 100vh;
+        margin: 0;
+        background:
+          radial-gradient(circle at 14% 6%, rgba(189, 125, 58, 0.1), transparent 32%),
+          linear-gradient(140deg, rgba(255, 255, 255, 0.6), transparent 46%),
+          var(--bg);
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      button {
+        cursor: pointer;
+      }
+
+      button:disabled {
+        cursor: not-allowed;
+        opacity: 0.55;
+      }
+
+      .app-shell {
+        display: grid;
+        grid-template-columns: minmax(320px, 420px) minmax(0, 1fr);
+        gap: 24px;
+        min-height: 100vh;
+        width: min(1480px, 100%);
+        margin: 0 auto;
+        padding: 24px;
+      }
+
+      .control-panel {
+        position: sticky;
+        top: 24px;
+        align-self: start;
+        min-width: 0;
+        max-height: calc(100vh - 48px);
+        overflow: auto;
+        border: 1px solid rgba(83, 74, 61, 0.16);
+        border-radius: var(--radius);
+        background: var(--panel);
+        box-shadow: 0 18px 48px rgba(43, 37, 28, 0.1);
+        backdrop-filter: blur(10px);
+      }
+
+      .panel-inner {
+        display: grid;
+        gap: 18px;
+        padding: 22px;
+      }
+
+      .brand-row {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 14px;
+      }
+
+      .kicker {
+        margin: 0;
+        color: var(--accent);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      h1 {
+        margin-bottom: 8px;
+        font-size: clamp(28px, 4vw, 42px);
+        line-height: 1.08;
+        letter-spacing: 0;
+      }
+
+      .kicker + h1 {
+        margin-top: 16px;
+      }
+
+      .intro {
+        margin-bottom: 0;
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.7;
+      }
+
+      .save-status {
+        flex: 0 0 auto;
+        max-width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 6px 10px;
+        color: var(--muted);
+        background: rgba(255, 255, 255, 0.72);
+        font-size: 12px;
+        white-space: nowrap;
+      }
+
+      .section {
+        border-top: 1px solid var(--line);
+        padding-top: 18px;
+      }
+
+      .section:first-of-type {
+        border-top: 0;
+        padding-top: 0;
+      }
+
+      .section-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+
+      .section-title h2 {
+        margin: 0;
+        font-size: 16px;
+        line-height: 1.3;
+      }
+
+      .counter {
+        border-radius: 999px;
+        background: #ece7dc;
+        padding: 4px 9px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .field-grid {
+        display: grid;
+        gap: 12px;
+      }
+
+      .field-grid.two {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      label,
+      .field-label {
+        display: block;
+        margin-bottom: 6px;
+        color: #303943;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        border: 1px solid var(--line-strong);
+        border-radius: 7px;
+        background: rgba(255, 255, 255, 0.86);
+        color: var(--ink);
+        outline: none;
+        transition:
+          border-color 140ms ease,
+          box-shadow 140ms ease,
+          background 140ms ease;
+      }
+
+      input,
+      select {
+        min-height: 40px;
+        padding: 0 11px;
+      }
+
+      textarea {
+        min-height: 78px;
+        resize: vertical;
+        padding: 10px 11px;
+        line-height: 1.5;
+      }
+
+      input::placeholder,
+      textarea::placeholder {
+        color: #9aa1a8;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        border-color: var(--accent);
+        background: #fff;
+        box-shadow: 0 0 0 3px rgba(189, 125, 58, 0.16);
+      }
+
+      .check-row {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.4;
+      }
+
+      .check-row input {
+        width: 17px;
+        min-height: 17px;
+        height: 17px;
+        margin: 0;
+        accent-color: var(--accent);
+      }
+
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 38px;
+        border: 1px solid var(--line-strong);
+        border-radius: 7px;
+        padding: 0 13px;
+        background: #fffaf0;
+        color: var(--ink);
+        font-size: 13px;
+        font-weight: 750;
+        text-decoration: none;
+        transition:
+          transform 120ms ease,
+          border-color 120ms ease,
+          background 120ms ease,
+          color 120ms ease;
+      }
+
+      .button:hover {
+        border-color: #9f7d53;
+        transform: translateY(-1px);
+      }
+
+      .button.primary {
+        border-color: #1e2a34;
+        background: #1e2a34;
+        color: #fffdf8;
+      }
+
+      .button.danger {
+        border-color: rgba(168, 79, 79, 0.46);
+        color: var(--danger);
+      }
+
+      .button.subtle {
+        background: rgba(255, 255, 255, 0.48);
+      }
+
+      .message {
+        min-height: 20px;
+        margin: 10px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 650;
+        line-height: 1.5;
+      }
+
+      .message.error {
+        color: var(--danger);
+      }
+
+      .message.success {
+        color: var(--success);
+      }
+
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .metric-card {
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        background: rgba(255, 255, 255, 0.58);
+        padding: 10px;
+      }
+
+      .metric-card b {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 20px;
+        line-height: 1;
+      }
+
+      .metric-card span {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .metrics + .metric-note {
+        margin-top: 9px;
+      }
+
+      .metric-note,
+      .poster-context {
+        margin: 0;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 650;
+        line-height: 1.55;
+      }
+
+      .filter-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .filter-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.56);
+        padding: 7px 10px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .filter-chip input {
+        width: 14px;
+        min-height: 14px;
+        height: 14px;
+        margin: 0;
+        accent-color: var(--chip-color);
+      }
+
+      .swatch {
+        width: 11px;
+        height: 11px;
+        border: 1px solid rgba(24, 33, 43, 0.16);
+        border-radius: 3px;
+        background: var(--chip-color);
+      }
+
+      .event-list {
+        display: grid;
+        gap: 10px;
+      }
+
+      .empty-card {
+        border: 1px dashed var(--line-strong);
+        border-radius: 7px;
+        padding: 18px 14px;
+        color: var(--muted);
+        background: rgba(255, 255, 255, 0.46);
+        text-align: center;
+        font-size: 13px;
+        line-height: 1.6;
+      }
+
+      .event-card {
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        background: rgba(255, 255, 255, 0.66);
+        padding: 12px;
+      }
+
+      .event-card.invalid {
+        border-color: rgba(168, 79, 79, 0.34);
+      }
+
+      .event-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .event-name {
+        overflow-wrap: anywhere;
+        margin: 0 0 5px;
+        font-weight: 800;
+        line-height: 1.35;
+      }
+
+      .event-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.3;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        border: 1px solid rgba(24, 33, 43, 0.11);
+        border-radius: 999px;
+        padding: 3px 7px;
+        background: rgba(255, 255, 255, 0.64);
+        font-weight: 700;
+      }
+
+      .badge.invalid {
+        border-color: rgba(168, 79, 79, 0.24);
+        color: var(--danger);
+        background: rgba(168, 79, 79, 0.08);
+      }
+
+      .event-note {
+        margin: 8px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.55;
+        overflow-wrap: anywhere;
+      }
+
+      .event-actions {
+        display: flex;
+        flex: 0 0 auto;
+        gap: 6px;
+      }
+
+      .text-button {
+        border: 0;
+        border-radius: 6px;
+        background: transparent;
+        color: var(--muted);
+        padding: 5px 7px;
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .text-button:hover {
+        background: rgba(189, 125, 58, 0.1);
+        color: var(--accent);
+      }
+
+      .text-button.danger:hover {
+        background: rgba(168, 79, 79, 0.1);
+        color: var(--danger);
+      }
+
+      .edit-form {
+        display: grid;
+        gap: 10px;
+        margin-top: 12px;
+        border-top: 1px solid var(--line);
+        padding-top: 12px;
+      }
+
+      .preview-area {
+        min-width: 0;
+      }
+
+      .preview-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 14px;
+        border: 1px solid rgba(83, 74, 61, 0.14);
+        border-radius: var(--radius);
+        background: rgba(255, 253, 248, 0.78);
+        padding: 12px 14px;
+        box-shadow: 0 14px 36px rgba(43, 37, 28, 0.08);
+      }
+
+      .toolbar-title {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 800;
+      }
+
+      .toolbar-note {
+        margin: 4px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.4;
+      }
+
+      .poster-scroll {
+        min-width: 0;
+        width: 100%;
+        overflow: auto;
+        padding-bottom: 10px;
+      }
+
+      .poster {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        width: min(100%, 940px);
+        min-width: 680px;
+        aspect-ratio: 210 / 297;
+        margin: 0 auto;
+        border: 1px solid rgba(83, 74, 61, 0.18);
+        border-radius: var(--radius);
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(255, 253, 248, 0.96)),
+          var(--paper);
+        box-shadow: var(--shadow);
+        padding: 28px;
+      }
+
+      .poster-header {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 16px;
+        border-bottom: 1px solid var(--line);
+        padding-bottom: 13px;
+      }
+
+      .poster-title {
+        margin: 0;
+        color: var(--ink);
+        font-family:
+          ui-serif,
+          "Songti SC",
+          "STSong",
+          Georgia,
+          serif;
+        font-size: clamp(28px, 4vw, 46px);
+        line-height: 1.08;
+        letter-spacing: 0;
+        overflow-wrap: anywhere;
+      }
+
+      .poster-subtitle {
+        margin: 8px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.45;
+      }
+
+      .poster-brand {
+        align-self: start;
+        color: var(--accent);
+        font-size: 12px;
+        font-weight: 850;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        white-space: nowrap;
+      }
+
+      .poster-metrics {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .poster-metric {
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        background: rgba(255, 255, 255, 0.54);
+        padding: 9px 10px;
+      }
+
+      .poster-metric b {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 19px;
+        line-height: 1;
+      }
+
+      .poster-metric span {
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 700;
+      }
+
+      .poster-context {
+        margin-top: -3px;
+      }
+
+      .poster-body {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(154px, 0.34fr);
+        gap: 14px;
+        min-height: 0;
+        flex: 1;
+      }
+
+      .grid-shell {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 0;
+      }
+
+      .grid-with-axes {
+        display: grid;
+        grid-template-columns: 28px auto;
+        grid-template-rows: 17px minmax(0, 1fr);
+        gap: 6px;
+        justify-content: center;
+        align-items: stretch;
+        width: 100%;
+        height: 100%;
+        min-height: 0;
+        max-width: 100%;
+      }
+
+      .axis-corner {
+        grid-column: 1;
+        grid-row: 1;
+      }
+
+      .month-axis,
+      .year-axis {
+        color: var(--faint);
+        font-size: 10px;
+        font-weight: 850;
+        line-height: 1;
+        user-select: none;
+      }
+
+      .month-axis {
+        display: grid;
+        grid-column: 2;
+        grid-row: 1;
+        grid-template-columns: repeat(24, minmax(0, 1fr));
+        gap: var(--grid-gap);
+        align-items: end;
+        width: 100%;
+        min-width: 0;
+      }
+
+      .month-axis span {
+        text-align: center;
+      }
+
+      .month-axis span:nth-child(1) {
+        grid-column: 1;
+      }
+
+      .month-axis span:nth-child(2) {
+        grid-column: 6;
+      }
+
+      .month-axis span:nth-child(3) {
+        grid-column: 12;
+      }
+
+      .month-axis span:nth-child(4) {
+        grid-column: 18;
+      }
+
+      .month-axis span:nth-child(5) {
+        grid-column: 24;
+      }
+
+      .year-axis {
+        position: relative;
+        display: block;
+        grid-column: 1;
+        grid-row: 2;
+        height: 100%;
+        text-align: right;
+      }
+
+      .year-axis span {
+        position: absolute;
+        right: 0;
+        top: var(--axis-y);
+        transform: translateY(-50%);
+      }
+
+      .life-grid {
+        display: grid;
+        grid-column: 2;
+        grid-row: 2;
+        grid-template-columns: repeat(24, 1fr);
+        grid-template-rows: repeat(40, 1fr);
+        gap: var(--grid-gap);
+        width: auto;
+        height: 100%;
+        max-width: 100%;
+        aspect-ratio: 24 / 40;
+      }
+
+      .life-cell {
+        position: relative;
+        min-width: 0;
+        min-height: 0;
+        border: 1px solid var(--line);
+        background: var(--future);
+        color: #17212b;
+        transition:
+          transform 110ms ease,
+          box-shadow 110ms ease,
+          border-color 110ms ease;
+      }
+
+      .life-cell.elapsed {
+        background: var(--elapsed);
+        border-color: #bcc3ca;
+      }
+
+      .life-cell.milestone {
+        background: var(--cell-color);
+        border-color: color-mix(in srgb, var(--cell-color), #1c2833 28%);
+      }
+
+      .life-cell.planned {
+        background:
+          repeating-linear-gradient(
+            135deg,
+            color-mix(in srgb, var(--cell-color), #ffffff 18%),
+            color-mix(in srgb, var(--cell-color), #ffffff 18%) 0.18rem,
+            color-mix(in srgb, var(--cell-color), #ffffff 44%) 0.18rem,
+            color-mix(in srgb, var(--cell-color), #ffffff 44%) 0.36rem
+          );
+      }
+
+      .life-cell.current {
+        border-color: var(--current);
+        box-shadow: inset 0 0 0 1px var(--current);
+      }
+
+      .life-cell.demo {
+        opacity: 0.68;
+      }
+
+      .life-cell:hover,
+      .life-cell:focus-visible {
+        z-index: 5;
+        border-color: #111923;
+        box-shadow:
+          0 0 0 2px rgba(17, 25, 35, 0.16),
+          0 8px 18px rgba(17, 25, 35, 0.16);
+        outline: none;
+        transform: scale(1.16);
+      }
+
+      .cell-label {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(24, 33, 43, 0.86);
+        font-size: clamp(5px, 0.82vw, 9px);
+        font-weight: 900;
+        line-height: 1;
+        pointer-events: none;
+      }
+
+      .poster-side {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        gap: 12px;
+      }
+
+      .side-block {
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        background: rgba(255, 255, 255, 0.48);
+        padding: 10px;
+      }
+
+      .side-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin: 0 0 8px;
+        color: #303943;
+        font-size: 12px;
+        font-weight: 900;
+      }
+
+      .legend-list,
+      .index-list {
+        display: grid;
+        gap: 5px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .legend-list {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 3px 4px;
+      }
+
+      .legend-list.status-legend {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 4px 6px;
+      }
+
+      .legend-list li {
+        display: flex;
+        align-items: center;
+        min-width: 0;
+        gap: 3px;
+        color: var(--muted);
+        font-size: 9.5px;
+        font-weight: 700;
+        line-height: 1.2;
+        overflow: hidden;
+      }
+
+      .legend-list li span:last-child {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .legend-list .swatch {
+        flex: 0 0 auto;
+        width: 7px;
+        height: 7px;
+        border-radius: 2px;
+      }
+
+      .index-block {
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
+      }
+
+      .index-list {
+        gap: 4px;
+      }
+
+      .index-item {
+        display: grid;
+        grid-template-columns: 18px minmax(0, 1fr);
+        gap: 6px;
+        color: #3d4650;
+        font-size: 10.5px;
+        line-height: 1.3;
+      }
+
+      .index-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 17px;
+        height: 17px;
+        border: 1px solid rgba(24, 33, 43, 0.16);
+        border-radius: 999px;
+        background: var(--chip-color);
+        font-size: 9px;
+        font-weight: 900;
+      }
+
+      .index-text {
+        overflow: hidden;
+      }
+
+      .index-name {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-weight: 850;
+      }
+
+      .index-meta {
+        display: block;
+        overflow: hidden;
+        color: var(--muted);
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .poster-notice {
+        margin: 0;
+        color: var(--danger);
+        font-size: 11px;
+        font-weight: 750;
+        line-height: 1.45;
+      }
+
+      .tooltip {
+        position: fixed;
+        z-index: 50;
+        max-width: min(300px, calc(100vw - 24px));
+        border: 1px solid rgba(24, 33, 43, 0.12);
+        border-radius: 8px;
+        background: rgba(24, 33, 43, 0.96);
+        color: #fffdf8;
+        box-shadow: 0 18px 44px rgba(24, 33, 43, 0.26);
+        opacity: 0;
+        padding: 10px 12px;
+        pointer-events: none;
+        transform: translateY(6px);
+        transition:
+          opacity 100ms ease,
+          transform 100ms ease;
+        font-size: 12px;
+        line-height: 1.55;
+      }
+
+      .tooltip.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .tooltip-title {
+        margin-bottom: 4px;
+        font-weight: 900;
+      }
+
+      .tooltip ul {
+        margin: 6px 0 0;
+        padding-left: 18px;
+      }
+
+      .hidden-input {
+        display: none;
+      }
+
+      @media (max-width: 1120px) {
+        .app-shell {
+          grid-template-columns: minmax(0, 1fr);
+        }
+
+        .control-panel {
+          position: static;
+          max-height: none;
+        }
+
+        .preview-toolbar {
+          position: sticky;
+          top: 0;
+          z-index: 10;
+        }
+      }
+
+      @media (max-width: 760px) {
+        .app-shell {
+          padding: 14px;
+        }
+
+        .panel-inner {
+          padding: 18px;
+        }
+
+        .field-grid.two,
+        .poster-metrics,
+        .poster-header,
+        .poster-body {
+          grid-template-columns: 1fr;
+        }
+
+        .preview-toolbar {
+          align-items: stretch;
+          flex-direction: column;
+        }
+
+        .button-row {
+          width: 100%;
+        }
+
+        .button {
+          flex: 1 1 auto;
+        }
+
+        .poster {
+          min-width: 640px;
+        }
+
+        .poster-metrics {
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+      }
+
+      @page {
+        size: A4 portrait;
+        margin: 0;
+      }
+
+      @media print {
+        html,
+        body {
+          width: 210mm;
+          height: 297mm;
+          margin: 0;
+          background: #fff;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+
+        body * {
+          visibility: hidden !important;
+        }
+
+        #poster,
+        #poster * {
+          visibility: visible !important;
+        }
+
+        .no-print,
+        .tooltip {
+          display: none !important;
+        }
+
+        #poster {
+          position: fixed;
+          inset: 0;
+          width: 210mm !important;
+          min-width: 0 !important;
+          height: 297mm !important;
+          margin: 0 !important;
+          border: 0 !important;
+          border-radius: 0 !important;
+          box-shadow: none !important;
+          padding: 10mm !important;
+          background: var(--paper) !important;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+
+        .poster-title {
+          font-size: 23pt !important;
+        }
+
+        .poster-subtitle,
+        .poster-brand {
+          font-size: 8pt !important;
+        }
+
+        .poster-header {
+          grid-template-columns: minmax(0, 1fr) auto !important;
+        }
+
+        .poster-metric {
+          padding: 2.4mm !important;
+        }
+
+        .poster-metrics {
+          display: grid !important;
+          grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+          gap: 2.2mm !important;
+          width: 100% !important;
+        }
+
+        .poster-metric b {
+          font-size: 13pt !important;
+        }
+
+        .poster-metric span {
+          font-size: 7pt !important;
+        }
+
+        .poster-context {
+          font-size: 6.8pt !important;
+          line-height: 1.35 !important;
+        }
+
+        .poster-body {
+          grid-template-columns: minmax(0, 1fr) 44mm !important;
+          gap: 5mm !important;
+        }
+
+        .life-grid {
+          gap: 0 !important;
+        }
+
+        .grid-with-axes {
+          grid-template-columns: 7mm auto !important;
+          grid-template-rows: 4mm minmax(0, 1fr) !important;
+          gap: 1.4mm !important;
+        }
+
+        .month-axis,
+        .year-axis {
+          font-size: 5.8pt !important;
+        }
+
+        .month-axis {
+          gap: 0 !important;
+        }
+
+        .life-cell {
+          border-width: 0.08mm !important;
+          border-color: #d0cdc8 !important;
+          box-shadow: none !important;
+          transform: none !important;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+
+        .life-cell.elapsed {
+          border-color: #b8bcc0 !important;
+        }
+
+        .life-cell.current {
+          box-shadow: inset 0 0 0 0.22mm var(--current) !important;
+        }
+
+        .cell-label {
+          font-size: 5.4pt !important;
+        }
+
+        .side-block {
+          padding: 2.1mm !important;
+        }
+
+        .side-heading {
+          font-size: 7.5pt !important;
+          margin-bottom: 1.8mm !important;
+        }
+
+        .legend-list li {
+          font-size: 6.6pt !important;
+          gap: 1.4mm !important;
+        }
+
+        .swatch {
+          width: 2.5mm !important;
+          height: 2.5mm !important;
+        }
+
+        .index-item {
+          grid-template-columns: 5mm minmax(0, 1fr) !important;
+          gap: 1.3mm !important;
+          font-size: 6.1pt !important;
+        }
+
+        .index-number {
+          width: 4.6mm !important;
+          height: 4.6mm !important;
+          font-size: 5.2pt !important;
+        }
+
+        .poster-notice {
+          font-size: 6.2pt !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="app-shell">
+      <aside class="control-panel no-print" aria-label="编辑人生地图">
+        <div class="panel-inner">
+          <header>
+            <div class="brand-row">
+              <div>
+                <p class="kicker">Life in Pixels</p>
+                <h1>人生 A4 纸</h1>
+              </div>
+              <span id="saveStatus" class="save-status">仅保存在本机</span>
+            </div>
+            <p class="intro">960 个格子，每格一个月。设置出生年月后，页面会生成一张可保存、可打印的人生地图。</p>
+          </header>
+
+          <section class="section" aria-labelledby="profileHeading">
+            <div class="section-title">
+              <h2 id="profileHeading">个人地图</h2>
+            </div>
+            <div class="field-grid">
+              <div>
+                <label for="mapTitle">标题</label>
+                <input id="mapTitle" type="text" maxlength="48" placeholder="例如：我的人生地图" autocomplete="off" />
+              </div>
+              <div>
+                <label for="birthMonth">出生年月</label>
+                <input id="birthMonth" type="text" inputmode="numeric" pattern="[0-9]{4}-[0-9]{2}" placeholder="YYYY-MM" autocomplete="off" />
+              </div>
+            </div>
+          </section>
+
+          <section class="section" aria-labelledby="metricsHeading">
+            <div class="section-title">
+              <h2 id="metricsHeading">摘要</h2>
+            </div>
+            <div class="metrics" aria-live="polite">
+              <div class="metric-card">
+                <b id="panelElapsed">--</b>
+                <span>已走过</span>
+              </div>
+              <div class="metric-card">
+                <b id="panelRemaining">--</b>
+                <span>未来月份</span>
+              </div>
+              <div class="metric-card">
+                <b id="panelProgress">--</b>
+                <span>已走过比例</span>
+              </div>
+              <div class="metric-card">
+                <b id="panelEventCount">0</b>
+                <span>已记录事件</span>
+              </div>
+            </div>
+            <p class="metric-note">这些数字不是倒计时，而是帮助你看见时间如何被经历、记录和安排。</p>
+          </section>
+
+          <section class="section" aria-labelledby="newEventHeading">
+            <div class="section-title">
+              <h2 id="newEventHeading">添加里程碑</h2>
+            </div>
+            <form id="newEventForm" class="field-grid">
+              <div>
+                <label for="eventName">事件名称</label>
+                <input id="eventName" type="text" maxlength="64" placeholder="例如：本科毕业 / 第一次工作" autocomplete="off" />
+              </div>
+              <div class="field-grid two">
+                <div>
+                  <label for="eventMonth">事件年月</label>
+                  <input id="eventMonth" type="text" inputmode="numeric" pattern="[0-9]{4}-[0-9]{2}" placeholder="YYYY-MM" autocomplete="off" />
+                </div>
+                <div>
+                  <label for="eventCategory">类别</label>
+                  <select id="eventCategory"></select>
+                </div>
+              </div>
+              <div class="field-grid two">
+                <div>
+                  <label for="eventStatus">状态</label>
+                  <select id="eventStatus">
+                    <option value="actual">已发生</option>
+                    <option value="planned">计划</option>
+                  </select>
+                </div>
+                <label class="check-row" for="eventShowOnPoster">
+                  <input id="eventShowOnPoster" type="checkbox" checked />
+                  <span>显示在海报索引</span>
+                </label>
+              </div>
+              <div>
+                <label for="eventNote">备注</label>
+                <textarea id="eventNote" maxlength="180" placeholder="可选。写一两句背景，屏幕查看时会显示。"></textarea>
+              </div>
+              <div class="button-row">
+                <button class="button primary" type="submit">添加事件</button>
+                <button id="resetNewEvent" class="button subtle" type="button">清空表单</button>
+              </div>
+              <p id="message" class="message" aria-live="polite"></p>
+            </form>
+          </section>
+
+          <section class="section" aria-labelledby="filterHeading">
+            <div class="section-title">
+              <h2 id="filterHeading">屏幕筛选</h2>
+            </div>
+            <div id="filterGrid" class="filter-grid"></div>
+          </section>
+
+          <section class="section" aria-labelledby="eventsHeading">
+            <div class="section-title">
+              <h2 id="eventsHeading">已记录事件</h2>
+              <span id="eventCount" class="counter">0 个</span>
+            </div>
+            <div id="eventList" class="event-list"></div>
+          </section>
+
+          <section class="section" aria-labelledby="dataHeading">
+            <div class="section-title">
+              <h2 id="dataHeading">保存与输出</h2>
+            </div>
+            <div class="button-row">
+              <button id="exportJsonButton" class="button" type="button">导出 JSON</button>
+              <button id="importJsonButton" class="button" type="button">导入 JSON</button>
+              <button id="exportSvgButton" class="button" type="button">导出 SVG</button>
+              <button id="clearDataButton" class="button danger" type="button">清空数据</button>
+            </div>
+            <input id="importJsonInput" class="hidden-input" type="file" accept="application/json,.json" />
+          </section>
+        </div>
+      </aside>
+
+      <section class="preview-area" aria-label="A4 海报预览">
+        <div class="preview-toolbar no-print">
+          <div>
+            <p id="previewTitle" class="toolbar-title">A4 海报预览</p>
+            <p id="previewNote" class="toolbar-note">打印和 SVG 导出会使用完整海报内容。</p>
+          </div>
+          <div class="button-row">
+            <button id="printButton" class="button primary" type="button">打印 / 存为 PDF</button>
+            <button id="exportSvgButtonTop" class="button" type="button">导出 SVG</button>
+          </div>
+        </div>
+
+        <div class="poster-scroll">
+          <article id="poster" class="poster" aria-label="人生 A4 纸海报">
+            <header class="poster-header">
+              <div>
+                <h2 id="posterTitle" class="poster-title">Life in Pixels</h2>
+                <p id="posterSubtitle" class="poster-subtitle">设置出生年月后生成个人地图。</p>
+              </div>
+              <div class="poster-brand">Life in Pixels</div>
+            </header>
+
+            <div class="poster-metrics" aria-label="人生摘要">
+              <div class="poster-metric">
+                <b id="posterElapsed">--</b>
+                <span>已走过</span>
+              </div>
+              <div class="poster-metric">
+                <b id="posterRemaining">--</b>
+                <span>未来月份</span>
+              </div>
+              <div class="poster-metric">
+                <b id="posterProgress">--</b>
+                <span>已走过比例</span>
+              </div>
+              <div class="poster-metric">
+                <b id="posterEvents">0</b>
+                <span>事件</span>
+              </div>
+            </div>
+            <p class="poster-context">这些数字不是倒计时，而是帮助你看见时间如何被经历、记录和安排。</p>
+
+            <div class="poster-body">
+              <div class="grid-shell">
+                <div class="grid-with-axes" aria-label="人生月份矩阵坐标">
+                  <div class="axis-corner" aria-hidden="true"></div>
+                  <div class="month-axis" aria-hidden="true">
+                    <span>1月</span>
+                    <span>6月</span>
+                    <span>12月</span>
+                    <span>18月</span>
+                    <span>24月</span>
+                  </div>
+                  <div class="year-axis" aria-hidden="true">
+                    <span style="--axis-y: 1.25%">0岁</span>
+                    <span style="--axis-y: 13.75%">10岁</span>
+                    <span style="--axis-y: 26.25%">20岁</span>
+                    <span style="--axis-y: 38.75%">30岁</span>
+                    <span style="--axis-y: 51.25%">40岁</span>
+                    <span style="--axis-y: 63.75%">50岁</span>
+                    <span style="--axis-y: 76.25%">60岁</span>
+                    <span style="--axis-y: 88.75%">70岁</span>
+                    <span style="--axis-y: 98.75%">80岁</span>
+                  </div>
+                  <div id="lifeGrid" class="life-grid" role="grid" aria-label="人生月份矩阵"></div>
+                </div>
+              </div>
+              <aside class="poster-side" aria-label="海报图例与索引">
+                <section class="side-block">
+                  <h3 class="side-heading">图例</h3>
+                  <ul id="posterLegend" class="legend-list"></ul>
+                </section>
+                <section class="side-block index-block">
+                  <h3 class="side-heading">
+                    <span>事件索引</span>
+                    <span id="posterIndexCount">0 / 24</span>
+                  </h3>
+                  <ol id="posterEventIndex" class="index-list"></ol>
+                </section>
+                <p id="posterOverflowNotice" class="poster-notice"></p>
+              </aside>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <div id="tooltip" class="tooltip" role="tooltip"></div>
+
+    <script>
+      const STORAGE_KEY = "life-in-pixels:v1";
+      const TOTAL_YEARS = 80;
+      const TOTAL_MONTHS = TOTAL_YEARS * 12;
+      const GRID_COLUMNS = 24;
+      const GRID_ROWS = 40;
+      const POSTER_EVENT_LIMIT = 24;
+
+      const CATEGORIES = [
+        { id: "learning", label: "学习", color: "#7da7bd" },
+        { id: "career", label: "事业", color: "#c69564" },
+        { id: "family", label: "家庭", color: "#9eaf83" },
+        { id: "health", label: "健康", color: "#7ea896" },
+        { id: "turning", label: "转折", color: "#d2b15e" },
+        { id: "other", label: "其他", color: "#9ca3a9" },
+      ];
+
+      const DEMO_EVENTS = [
+        { id: "demo-1", name: "学习", month: "示意", category: "learning", status: "actual", cellNumber: 88 },
+        { id: "demo-2", name: "健康", month: "示意", category: "health", status: "actual", cellNumber: 241 },
+        { id: "demo-3", name: "事业", month: "示意", category: "career", status: "actual", cellNumber: 326 },
+        { id: "demo-4", name: "家庭", month: "示意", category: "family", status: "actual", cellNumber: 414 },
+        { id: "demo-5", name: "计划", month: "示意", category: "turning", status: "planned", cellNumber: 612 },
+      ];
+
+      const STATUS_LEGEND = [
+        { label: "已走过", color: "#d4d8dc" },
+        { label: "未来", color: "#fffdf8" },
+        { label: "当前", color: "#1d2a35" },
+        { label: "计划", color: "#b99cc3" },
+      ];
+
+      const DEFAULT_DATA = {
+        version: 1,
+        profile: {
+          title: "",
+          birthMonth: "",
+        },
+        milestones: [],
+      };
+
+      const state = {
+        data: cloneData(DEFAULT_DATA),
+        ui: {
+          editingId: null,
+          activeCategories: new Set(CATEGORIES.map((category) => category.id)),
+          outputMode: false,
+        },
+      };
+
+      const elements = {
+        saveStatus: document.getElementById("saveStatus"),
+        mapTitle: document.getElementById("mapTitle"),
+        birthMonth: document.getElementById("birthMonth"),
+        panelElapsed: document.getElementById("panelElapsed"),
+        panelRemaining: document.getElementById("panelRemaining"),
+        panelProgress: document.getElementById("panelProgress"),
+        panelEventCount: document.getElementById("panelEventCount"),
+        newEventForm: document.getElementById("newEventForm"),
+        eventName: document.getElementById("eventName"),
+        eventMonth: document.getElementById("eventMonth"),
+        eventCategory: document.getElementById("eventCategory"),
+        eventStatus: document.getElementById("eventStatus"),
+        eventShowOnPoster: document.getElementById("eventShowOnPoster"),
+        eventNote: document.getElementById("eventNote"),
+        resetNewEvent: document.getElementById("resetNewEvent"),
+        message: document.getElementById("message"),
+        filterGrid: document.getElementById("filterGrid"),
+        eventList: document.getElementById("eventList"),
+        eventCount: document.getElementById("eventCount"),
+        exportJsonButton: document.getElementById("exportJsonButton"),
+        importJsonButton: document.getElementById("importJsonButton"),
+        importJsonInput: document.getElementById("importJsonInput"),
+        exportSvgButton: document.getElementById("exportSvgButton"),
+        exportSvgButtonTop: document.getElementById("exportSvgButtonTop"),
+        clearDataButton: document.getElementById("clearDataButton"),
+        printButton: document.getElementById("printButton"),
+        previewTitle: document.getElementById("previewTitle"),
+        previewNote: document.getElementById("previewNote"),
+        posterTitle: document.getElementById("posterTitle"),
+        posterSubtitle: document.getElementById("posterSubtitle"),
+        posterElapsed: document.getElementById("posterElapsed"),
+        posterRemaining: document.getElementById("posterRemaining"),
+        posterProgress: document.getElementById("posterProgress"),
+        posterEvents: document.getElementById("posterEvents"),
+        posterLegend: document.getElementById("posterLegend"),
+        posterEventIndex: document.getElementById("posterEventIndex"),
+        posterIndexCount: document.getElementById("posterIndexCount"),
+        posterOverflowNotice: document.getElementById("posterOverflowNotice"),
+        lifeGrid: document.getElementById("lifeGrid"),
+        tooltip: document.getElementById("tooltip"),
+      };
+
+      function cloneData(value) {
+        return JSON.parse(JSON.stringify(value));
+      }
+
+      function categoryById(id) {
+        return CATEGORIES.find((category) => category.id === id) || CATEGORIES[CATEGORIES.length - 1];
+      }
+
+      function padMonth(value) {
+        return String(value).padStart(2, "0");
+      }
+
+      function formatMonth(year, month) {
+        return `${year}-${padMonth(month)}`;
+      }
+
+      function todayMonth() {
+        const now = new Date();
+        return {
+          year: now.getFullYear(),
+          month: now.getMonth() + 1,
+        };
+      }
+
+      function parseMonth(value) {
+        const text = String(value || "").trim();
+        if (!/^\d{4}-\d{2}$/.test(text)) {
+          return null;
+        }
+
+        const [yearText, monthText] = text.split("-");
+        const year = Number(yearText);
+        const month = Number(monthText);
+
+        if (!Number.isInteger(year) || !Number.isInteger(month) || year < 1 || month < 1 || month > 12) {
+          return null;
+        }
+
+        return { year, month };
+      }
+
+      function monthOffset(from, to) {
+        return (to.year - from.year) * 12 + (to.month - from.month);
+      }
+
+      function monthFromOffset(start, offset) {
+        const zeroBasedMonth = start.year * 12 + (start.month - 1) + offset;
+        return {
+          year: Math.floor(zeroBasedMonth / 12),
+          month: (zeroBasedMonth % 12) + 1,
+        };
+      }
+
+      function ageLabel(offset) {
+        if (offset < 0) {
+          return "尚未开始";
+        }
+
+        const years = Math.floor(offset / 12);
+        const months = offset % 12;
+        return `${years} 岁 ${months} 个月`;
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      function setMessage(text, type = "info") {
+        elements.message.textContent = text;
+        elements.message.className = `message${type === "error" ? " error" : ""}${type === "success" ? " success" : ""}`;
+      }
+
+      function setSaveStatus(text) {
+        elements.saveStatus.textContent = text;
+      }
+
+      function normalizeImportedData(raw) {
+        if (!raw || raw.version !== 1 || typeof raw !== "object") {
+          throw new Error("JSON 版本不匹配。");
+        }
+
+        const profile = raw.profile || {};
+        const milestones = Array.isArray(raw.milestones) ? raw.milestones : [];
+
+        return {
+          version: 1,
+          profile: {
+            title: typeof profile.title === "string" ? profile.title.slice(0, 48) : "",
+            birthMonth: typeof profile.birthMonth === "string" && parseMonth(profile.birthMonth) ? profile.birthMonth : "",
+          },
+          milestones: milestones.map(normalizeMilestone).filter(Boolean),
+        };
+      }
+
+      function normalizeMilestone(item) {
+        if (!item || typeof item !== "object") {
+          return null;
+        }
+
+        const name = String(item.name || "").trim().slice(0, 64);
+        const month = String(item.month || "").trim();
+
+        if (!name || !parseMonth(month)) {
+          return null;
+        }
+
+        const category = CATEGORIES.some((entry) => entry.id === item.category) ? item.category : "other";
+        const status = item.status === "planned" ? "planned" : "actual";
+
+        const importedId = typeof item.id === "string" && /^[A-Za-z0-9_-]+$/.test(item.id) ? item.id : createId();
+
+        return {
+          id: importedId,
+          name,
+          month,
+          category,
+          status,
+          note: typeof item.note === "string" ? item.note.slice(0, 180) : "",
+          showOnPoster: item.showOnPoster !== false,
+          createdAt: typeof item.createdAt === "string" ? item.createdAt : new Date().toISOString(),
+          updatedAt: typeof item.updatedAt === "string" ? item.updatedAt : new Date().toISOString(),
+        };
+      }
+
+      function loadData() {
+        try {
+          const saved = localStorage.getItem(STORAGE_KEY);
+          if (!saved) {
+            setSaveStatus("仅保存在本机");
+            return;
+          }
+
+          state.data = normalizeImportedData(JSON.parse(saved));
+          setSaveStatus("已从本机恢复");
+        } catch (error) {
+          state.data = cloneData(DEFAULT_DATA);
+          setSaveStatus("本机数据未读取");
+          setMessage(`无法读取本机数据：${error.message}`, "error");
+        }
+      }
+
+      function saveData() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state.data));
+          const now = new Date();
+          setSaveStatus(`已保存 ${padMonth(now.getHours())}:${padMonth(now.getMinutes())}`);
+        } catch (error) {
+          setSaveStatus("保存失败");
+          setMessage(`无法保存到本机：${error.message}`, "error");
+        }
+      }
+
+      function createId() {
+        if (window.crypto && window.crypto.randomUUID) {
+          return window.crypto.randomUUID();
+        }
+
+        return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+      }
+
+      function getLifeContext() {
+        const birth = parseMonth(state.data.profile.birthMonth);
+        if (!birth) {
+          return {
+            hasBirth: false,
+            birth: null,
+            elapsedMonths: 0,
+            remainingMonths: TOTAL_MONTHS,
+            progress: 0,
+            currentCell: null,
+            currentOffset: null,
+            exceeded: false,
+          };
+        }
+
+        const current = todayMonth();
+        const currentOffset = monthOffset(birth, current);
+        const elapsedMonths = Math.max(0, Math.min(TOTAL_MONTHS, currentOffset));
+        const remainingMonths = Math.max(0, TOTAL_MONTHS - elapsedMonths);
+        const currentCell = currentOffset >= 0 && currentOffset < TOTAL_MONTHS ? currentOffset + 1 : null;
+
+        return {
+          hasBirth: true,
+          birth,
+          elapsedMonths,
+          remainingMonths,
+          progress: elapsedMonths / TOTAL_MONTHS,
+          currentCell,
+          currentOffset,
+          exceeded: currentOffset >= TOTAL_MONTHS,
+        };
+      }
+
+      function projectMilestone(milestone, context) {
+        const eventMonth = parseMonth(milestone.month);
+        if (!eventMonth) {
+          return {
+            ...milestone,
+            valid: false,
+            reason: "年月无效",
+            offset: null,
+            cellNumber: null,
+          };
+        }
+
+        if (!context.hasBirth) {
+          return {
+            ...milestone,
+            valid: false,
+            reason: "待设置出生年月",
+            offset: null,
+            cellNumber: null,
+          };
+        }
+
+        const offset = monthOffset(context.birth, eventMonth);
+        const cellNumber = offset + 1;
+
+        if (offset < 0) {
+          return {
+            ...milestone,
+            valid: false,
+            reason: "早于出生",
+            offset,
+            cellNumber,
+          };
+        }
+
+        if (cellNumber > TOTAL_MONTHS) {
+          return {
+            ...milestone,
+            valid: false,
+            reason: "超出 80 年",
+            offset,
+            cellNumber,
+          };
+        }
+
+        return {
+          ...milestone,
+          valid: true,
+          reason: "",
+          offset,
+          cellNumber,
+          calendar: eventMonth,
+          isFuture: context.currentOffset !== null ? offset > context.currentOffset : false,
+        };
+      }
+
+      function getProjectedMilestones(context) {
+        return state.data.milestones.map((milestone) => projectMilestone(milestone, context));
+      }
+
+      function sortProjected(a, b) {
+        if (a.valid && b.valid && a.offset !== b.offset) {
+          return a.offset - b.offset;
+        }
+
+        if (a.month !== b.month) {
+          return a.month.localeCompare(b.month);
+        }
+
+        return (a.createdAt || "").localeCompare(b.createdAt || "");
+      }
+
+      function getPosterSelection(projected, useFilters) {
+        const filtered = projected
+          .filter((milestone) => milestone.valid && milestone.showOnPoster)
+          .filter((milestone) => !useFilters || state.ui.activeCategories.has(milestone.category))
+          .sort(sortProjected);
+        const displayed = filtered.slice(0, POSTER_EVENT_LIMIT).map((milestone, index) => ({
+          ...milestone,
+          posterIndex: index + 1,
+        }));
+
+        return {
+          selected: filtered,
+          displayed,
+          hiddenCount: Math.max(0, filtered.length - POSTER_EVENT_LIMIT),
+        };
+      }
+
+      function groupByCell(items) {
+        const groups = new Map();
+        items.forEach((item) => {
+          if (!groups.has(item.cellNumber)) {
+            groups.set(item.cellNumber, []);
+          }
+
+          groups.get(item.cellNumber).push(item);
+        });
+        return groups;
+      }
+
+      function getDemoGroups() {
+        return groupByCell(DEMO_EVENTS);
+      }
+
+      function renderProfileFields() {
+        if (document.activeElement !== elements.mapTitle) {
+          elements.mapTitle.value = state.data.profile.title;
+        }
+
+        if (document.activeElement !== elements.birthMonth) {
+          elements.birthMonth.value = state.data.profile.birthMonth;
+        }
+      }
+
+      function renderCategoryOptions() {
+        const options = CATEGORIES.map((category) => `<option value="${category.id}">${category.label}</option>`).join("");
+        elements.eventCategory.innerHTML = options;
+      }
+
+      function renderFilters() {
+        elements.filterGrid.innerHTML = CATEGORIES.map((category) => {
+          const checked = state.ui.activeCategories.has(category.id) ? "checked" : "";
+          return `
+            <label class="filter-chip" style="--chip-color: ${category.color}">
+              <input type="checkbox" value="${category.id}" ${checked} />
+              <span class="swatch"></span>
+              <span>${category.label}</span>
+            </label>
+          `;
+        }).join("");
+      }
+
+      function renderMetrics(context, projected) {
+        const validEvents = projected.filter((milestone) => milestone.valid).length;
+        const progressText = context.hasBirth ? `${Math.round(context.progress * 1000) / 10}%` : "--";
+        const elapsedText = context.hasBirth ? String(context.elapsedMonths) : "--";
+        const remainingText = context.hasBirth ? String(context.remainingMonths) : "--";
+
+        elements.panelElapsed.textContent = elapsedText;
+        elements.panelRemaining.textContent = remainingText;
+        elements.panelProgress.textContent = progressText;
+        elements.panelEventCount.textContent = String(state.data.milestones.length);
+        elements.posterElapsed.textContent = elapsedText;
+        elements.posterRemaining.textContent = remainingText;
+        elements.posterProgress.textContent = progressText;
+        elements.posterEvents.textContent = String(validEvents);
+      }
+
+      function renderPoster(context, projected, options = {}) {
+        const useFilters = Boolean(options.useFilters);
+        const selection = getPosterSelection(projected, useFilters);
+        const title = state.data.profile.title.trim() || (context.hasBirth ? "我的人生地图" : "Life in Pixels");
+        const subtitle = context.hasBirth
+          ? `出生：${state.data.profile.birthMonth} · ${TOTAL_YEARS} 年 · ${TOTAL_MONTHS} 个月`
+          : "设置出生年月后生成个人地图；当前预览为非持久化示意。";
+
+        elements.posterTitle.textContent = title;
+        elements.posterSubtitle.textContent = subtitle;
+        elements.previewTitle.textContent = context.hasBirth ? "A4 海报预览" : "待设置出生年月";
+        elements.previewNote.textContent = useFilters
+          ? "当前预览受类别筛选影响；打印和 SVG 导出会使用完整海报内容。"
+          : "打印和 SVG 导出会使用完整海报内容。";
+
+        if (!context.hasBirth) {
+          renderPosterLegend(false);
+          renderGrid(context, getDemoGroups(), { demo: true });
+          elements.posterIndexCount.textContent = "0 / 24";
+          elements.posterEventIndex.innerHTML = '<li class="index-item"><span class="index-number">--</span><span class="index-text"><span class="index-name">设置出生年月</span><span class="index-meta">你的事件会出现在这里</span></span></li>';
+          elements.posterOverflowNotice.textContent = "";
+          return;
+        }
+
+        renderPosterLegend(selection.displayed.length > 0);
+        renderGrid(context, groupByCell(selection.displayed), { demo: false });
+        renderPosterIndex(selection, projected, useFilters);
+      }
+
+      function renderPosterLegend(hasVisibleEvents) {
+        const items = hasVisibleEvents ? CATEGORIES : STATUS_LEGEND;
+        elements.posterLegend.className = `legend-list ${hasVisibleEvents ? "category-legend" : "status-legend"}`;
+        elements.posterLegend.innerHTML = items.map((item) => `
+          <li style="--chip-color: ${item.color}">
+            <span class="swatch"></span>
+            <span>${item.label}</span>
+          </li>
+        `).join("");
+      }
+
+      function renderGrid(context, groups, options) {
+        const fragment = document.createDocumentFragment();
+        elements.lifeGrid.innerHTML = "";
+
+        for (let index = 0; index < TOTAL_MONTHS; index += 1) {
+          const cellNumber = index + 1;
+          const cell = document.createElement("div");
+          const milestones = groups.get(cellNumber) || [];
+          const firstMilestone = milestones[0];
+          const category = firstMilestone ? categoryById(firstMilestone.category) : null;
+          const isElapsed = context.hasBirth && cellNumber <= context.elapsedMonths;
+          const isCurrent = context.currentCell === cellNumber;
+          const isPlanned = milestones.some((milestone) => milestone.status === "planned");
+
+          cell.className = "life-cell";
+          cell.setAttribute("role", "gridcell");
+          cell.tabIndex = 0;
+          cell.dataset.cell = String(cellNumber);
+          cell.dataset.tooltip = buildTooltip(cellNumber, context, milestones, Boolean(options.demo));
+          cell.setAttribute("aria-label", buildCellLabel(cellNumber, context, milestones, Boolean(options.demo)));
+
+          if (isElapsed) {
+            cell.classList.add("elapsed");
+          }
+
+          if (isCurrent) {
+            cell.classList.add("current");
+          }
+
+          if (firstMilestone) {
+            cell.classList.add("milestone");
+            cell.style.setProperty("--cell-color", category.color);
+          }
+
+          if (isPlanned) {
+            cell.classList.add("planned");
+          }
+
+          if (options.demo) {
+            cell.classList.add("demo");
+          }
+
+          const label = gridCellLabel(milestones);
+          if (label) {
+            const labelNode = document.createElement("span");
+            labelNode.className = "cell-label";
+            labelNode.textContent = label;
+            cell.appendChild(labelNode);
+          }
+
+          fragment.appendChild(cell);
+        }
+
+        elements.lifeGrid.appendChild(fragment);
+      }
+
+      function gridCellLabel(milestones) {
+        if (milestones.length === 0) {
+          return "";
+        }
+
+        const first = milestones[0];
+        if (first.posterIndex) {
+          return milestones.length > 1 ? `${first.posterIndex}+${milestones.length - 1}` : String(first.posterIndex);
+        }
+
+        return milestones.length > 1 ? `+${milestones.length}` : "";
+      }
+
+      function buildTooltip(cellNumber, context, milestones, demo) {
+        if (demo) {
+          const names = milestones.map((item) => `<li>${escapeHtml(item.name)} · ${categoryById(item.category).label}</li>`).join("");
+          return `
+            <div class="tooltip-title">示意格 ${cellNumber}</div>
+            <div>设置出生年月后，这里会显示真实年龄和公历年月。</div>
+            ${names ? `<ul>${names}</ul>` : ""}
+          `;
+        }
+
+        const offset = cellNumber - 1;
+        const calendar = context.hasBirth ? monthFromOffset(context.birth, offset) : null;
+        const eventItems = milestones.map((item) => {
+          const category = categoryById(item.category);
+          const status = statusLabel(item, context);
+          const note = item.note ? `：${escapeHtml(item.note)}` : "";
+          return `<li>${escapeHtml(item.name)} · ${category.label} · ${status}${note}</li>`;
+        }).join("");
+
+        return `
+          <div class="tooltip-title">第 ${cellNumber} 格</div>
+          <div>年龄：${ageLabel(offset)}</div>
+          <div>公历年月：${calendar ? formatMonth(calendar.year, calendar.month) : "--"}</div>
+          ${eventItems ? `<ul>${eventItems}</ul>` : ""}
+        `;
+      }
+
+      function buildCellLabel(cellNumber, context, milestones, demo) {
+        if (demo) {
+          return `示意格 ${cellNumber}`;
+        }
+
+        const offset = cellNumber - 1;
+        const calendar = context.hasBirth ? monthFromOffset(context.birth, offset) : null;
+        const events = milestones.length ? `，事件：${milestones.map((item) => item.name).join("、")}` : "";
+        return `第 ${cellNumber} 格，年龄 ${ageLabel(offset)}，公历年月 ${calendar ? formatMonth(calendar.year, calendar.month) : "未设置"}${events}`;
+      }
+
+      function statusLabel(milestone, context) {
+        if (milestone.status === "planned") {
+          return "计划";
+        }
+
+        if (milestone.valid && context.currentOffset !== null && milestone.offset > context.currentOffset) {
+          return "未到";
+        }
+
+        return "已发生";
+      }
+
+      function renderPosterIndex(selection, projected, useFilters) {
+        elements.posterIndexCount.textContent = `${selection.displayed.length} / ${POSTER_EVENT_LIMIT}`;
+
+        if (selection.displayed.length === 0) {
+          elements.posterEventIndex.innerHTML = '<li class="index-item"><span class="index-number">--</span><span class="index-text"><span class="index-name">暂无可显示事件</span><span class="index-meta">勾选“显示在海报索引”后会列出</span></span></li>';
+        } else {
+          elements.posterEventIndex.innerHTML = selection.displayed.map((milestone) => {
+            const category = categoryById(milestone.category);
+            const status = milestone.status === "planned" ? "计划" : "已发生";
+            return `
+              <li class="index-item" style="--chip-color: ${category.color}">
+                <span class="index-number">${milestone.posterIndex}</span>
+                <span class="index-text">
+                  <span class="index-name">${escapeHtml(milestone.name)}</span>
+                  <span class="index-meta">${milestone.month} · ${category.label} · ${status}</span>
+                </span>
+              </li>
+            `;
+          }).join("");
+        }
+
+        const allSelected = projected.filter((milestone) => milestone.valid && milestone.showOnPoster).length;
+        if (selection.hiddenCount > 0) {
+          elements.posterOverflowNotice.textContent = `已选 ${selection.selected.length} 个事件，当前仅显示前 ${POSTER_EVENT_LIMIT} 个。请关闭部分事件的海报开关以控制排版。`;
+        } else if (useFilters && allSelected !== selection.selected.length) {
+          elements.posterOverflowNotice.textContent = "当前仅预览筛选类别；打印和 SVG 会使用全部已选事件。";
+        } else {
+          elements.posterOverflowNotice.textContent = "";
+        }
+      }
+
+      function renderEventList(projected, context) {
+        elements.eventCount.textContent = `${state.data.milestones.length} 个`;
+        if (state.data.milestones.length === 0) {
+          elements.eventList.innerHTML = '<div class="empty-card">暂无里程碑。添加几个关键月份后，地图会开始出现你的时间纹理。</div>';
+          return;
+        }
+
+        const rows = [...projected].sort(sortProjected);
+        elements.eventList.innerHTML = rows.map((milestone) => {
+          const category = categoryById(milestone.category);
+          const validity = milestone.valid
+            ? `<span class="badge">第 ${milestone.cellNumber} 格</span>`
+            : `<span class="badge invalid">${milestone.reason}</span>`;
+          const status = `<span class="badge">${statusLabel(milestone, context)}</span>`;
+          const poster = milestone.showOnPoster ? '<span class="badge">入海报</span>' : '<span class="badge">不入海报</span>';
+          const note = milestone.note ? `<p class="event-note">${escapeHtml(milestone.note)}</p>` : "";
+          const invalidClass = milestone.valid ? "" : " invalid";
+
+          if (state.ui.editingId === milestone.id) {
+            return renderEventEditCard(milestone, category, invalidClass);
+          }
+
+          return `
+            <article class="event-card${invalidClass}" data-event-id="${milestone.id}">
+              <div class="event-top">
+                <div>
+                  <p class="event-name">${escapeHtml(milestone.name)}</p>
+                  <div class="event-meta" style="--chip-color: ${category.color}">
+                    <span class="badge"><span class="swatch"></span>${category.label}</span>
+                    <span class="badge">${milestone.month}</span>
+                    ${status}
+                    ${validity}
+                    ${poster}
+                  </div>
+                  ${note}
+                </div>
+                <div class="event-actions">
+                  <button class="text-button" type="button" data-action="edit">编辑</button>
+                  <button class="text-button danger" type="button" data-action="delete">删除</button>
+                </div>
+              </div>
+            </article>
+          `;
+        }).join("");
+      }
+
+      function renderEventEditCard(milestone, category, invalidClass) {
+        const categoryOptions = CATEGORIES.map((item) => `<option value="${item.id}" ${item.id === milestone.category ? "selected" : ""}>${item.label}</option>`).join("");
+        return `
+          <article class="event-card${invalidClass}" data-event-id="${milestone.id}">
+            <div class="event-top">
+              <div>
+                <p class="event-name">编辑事件</p>
+                <div class="event-meta" style="--chip-color: ${category.color}">
+                  <span class="badge"><span class="swatch"></span>${category.label}</span>
+                  <span class="badge">${milestone.month}</span>
+                </div>
+              </div>
+            </div>
+            <div class="edit-form">
+              <div>
+                <label class="field-label" for="edit-name-${milestone.id}">事件名称</label>
+                <input id="edit-name-${milestone.id}" data-edit-field="name" type="text" maxlength="64" value="${escapeHtml(milestone.name)}" />
+              </div>
+              <div class="field-grid two">
+                <div>
+                  <label class="field-label" for="edit-month-${milestone.id}">事件年月</label>
+                  <input id="edit-month-${milestone.id}" data-edit-field="month" type="text" inputmode="numeric" pattern="[0-9]{4}-[0-9]{2}" value="${escapeHtml(milestone.month)}" />
+                </div>
+                <div>
+                  <label class="field-label" for="edit-category-${milestone.id}">类别</label>
+                  <select id="edit-category-${milestone.id}" data-edit-field="category">${categoryOptions}</select>
+                </div>
+              </div>
+              <div class="field-grid two">
+                <div>
+                  <label class="field-label" for="edit-status-${milestone.id}">状态</label>
+                  <select id="edit-status-${milestone.id}" data-edit-field="status">
+                    <option value="actual" ${milestone.status === "actual" ? "selected" : ""}>已发生</option>
+                    <option value="planned" ${milestone.status === "planned" ? "selected" : ""}>计划</option>
+                  </select>
+                </div>
+                <label class="check-row" for="edit-poster-${milestone.id}">
+                  <input id="edit-poster-${milestone.id}" data-edit-field="showOnPoster" type="checkbox" ${milestone.showOnPoster ? "checked" : ""} />
+                  <span>显示在海报索引</span>
+                </label>
+              </div>
+              <div>
+                <label class="field-label" for="edit-note-${milestone.id}">备注</label>
+                <textarea id="edit-note-${milestone.id}" data-edit-field="note" maxlength="180">${escapeHtml(milestone.note || "")}</textarea>
+              </div>
+              <div class="button-row">
+                <button class="button primary" type="button" data-action="save-edit">保存</button>
+                <button class="button subtle" type="button" data-action="cancel-edit">取消</button>
+              </div>
+            </div>
+          </article>
+        `;
+      }
+
+      function renderAll(options = {}) {
+        const context = getLifeContext();
+        const projected = getProjectedMilestones(context);
+        const useFilters = options.forceOutput ? false : !allCategoriesActive();
+
+        renderProfileFields();
+        renderMetrics(context, projected);
+        renderPoster(context, projected, { useFilters });
+        renderEventList(projected, context);
+        updateActionStates(context, projected);
+      }
+
+      function allCategoriesActive() {
+        return CATEGORIES.every((category) => state.ui.activeCategories.has(category.id));
+      }
+
+      function updateActionStates(context, projected) {
+        const selectedPosterEvents = projected.filter((milestone) => milestone.valid && milestone.showOnPoster).length;
+        if (!context.hasBirth) {
+          elements.printButton.disabled = false;
+          elements.exportSvgButton.disabled = false;
+          elements.exportSvgButtonTop.disabled = false;
+        } else {
+          elements.printButton.disabled = false;
+          elements.exportSvgButton.disabled = false;
+          elements.exportSvgButtonTop.disabled = false;
+        }
+
+        if (selectedPosterEvents > POSTER_EVENT_LIMIT) {
+          elements.previewNote.textContent = `已选 ${selectedPosterEvents} 个海报事件，输出只会列出前 ${POSTER_EVENT_LIMIT} 个。`;
+        }
+      }
+
+      function resetNewEventForm() {
+        elements.eventName.value = "";
+        elements.eventMonth.value = "";
+        elements.eventCategory.value = "learning";
+        elements.eventStatus.value = "actual";
+        elements.eventShowOnPoster.checked = true;
+        elements.eventNote.value = "";
+      }
+
+      function addMilestoneFromForm(event) {
+        event.preventDefault();
+        const name = elements.eventName.value.trim();
+        const month = elements.eventMonth.value.trim();
+        const category = elements.eventCategory.value;
+        const status = elements.eventStatus.value === "planned" ? "planned" : "actual";
+        const note = elements.eventNote.value.trim();
+
+        if (!name) {
+          setMessage("请输入事件名称。", "error");
+          return;
+        }
+
+        if (!parseMonth(month)) {
+          setMessage("请输入有效年月，格式为 YYYY-MM。", "error");
+          return;
+        }
+
+        const milestone = {
+          id: createId(),
+          name: name.slice(0, 64),
+          month,
+          category: CATEGORIES.some((item) => item.id === category) ? category : "other",
+          status,
+          note: note.slice(0, 180),
+          showOnPoster: elements.eventShowOnPoster.checked,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+
+        state.data.milestones.push(milestone);
+        saveData();
+        resetNewEventForm();
+
+        const context = getLifeContext();
+        const projected = projectMilestone(milestone, context);
+        const suffix = projected.valid ? `，映射到第 ${projected.cellNumber} 格。` : `，${projected.reason}，暂不渲染到海报。`;
+        setMessage(`已添加：${milestone.name}${suffix}`, projected.valid ? "success" : "error");
+        renderAll();
+      }
+
+      function updateProfile(field, value) {
+        state.data.profile[field] = value.trim().slice(0, field === "title" ? 48 : 7);
+        saveData();
+        renderAll();
+      }
+
+      function handleEventListClick(event) {
+        const button = event.target.closest("[data-action]");
+        if (!button) {
+          return;
+        }
+
+        const card = button.closest("[data-event-id]");
+        const id = card ? card.dataset.eventId : "";
+        const milestone = state.data.milestones.find((item) => item.id === id);
+        if (!milestone) {
+          return;
+        }
+
+        const action = button.dataset.action;
+        if (action === "edit") {
+          state.ui.editingId = id;
+          renderAll();
+          return;
+        }
+
+        if (action === "cancel-edit") {
+          state.ui.editingId = null;
+          renderAll();
+          return;
+        }
+
+        if (action === "delete") {
+          if (!window.confirm(`删除「${milestone.name}」？`)) {
+            return;
+          }
+
+          state.data.milestones = state.data.milestones.filter((item) => item.id !== id);
+          state.ui.editingId = null;
+          saveData();
+          setMessage("已删除事件。", "success");
+          renderAll();
+          return;
+        }
+
+        if (action === "save-edit") {
+          saveInlineEdit(card, milestone);
+        }
+      }
+
+      function saveInlineEdit(card, milestone) {
+        const fields = card.querySelectorAll("[data-edit-field]");
+        const next = { ...milestone };
+        fields.forEach((field) => {
+          const key = field.dataset.editField;
+          if (key === "showOnPoster") {
+            next.showOnPoster = field.checked;
+          } else {
+            next[key] = field.value.trim();
+          }
+        });
+
+        if (!next.name) {
+          setMessage("事件名称不能为空。", "error");
+          return;
+        }
+
+        if (!parseMonth(next.month)) {
+          setMessage("事件年月格式应为 YYYY-MM。", "error");
+          return;
+        }
+
+        next.name = next.name.slice(0, 64);
+        next.note = String(next.note || "").slice(0, 180);
+        next.category = CATEGORIES.some((item) => item.id === next.category) ? next.category : "other";
+        next.status = next.status === "planned" ? "planned" : "actual";
+        next.updatedAt = new Date().toISOString();
+
+        state.data.milestones = state.data.milestones.map((item) => (item.id === milestone.id ? next : item));
+        state.ui.editingId = null;
+        saveData();
+        setMessage("已保存事件。", "success");
+        renderAll();
+      }
+
+      function exportJson() {
+        const content = JSON.stringify(state.data, null, 2);
+        downloadBlob(content, "application/json", `life-in-pixels-${todayFileStamp()}.json`);
+        setMessage("已导出 JSON 备份。", "success");
+      }
+
+      function importJsonFile(file) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const nextData = normalizeImportedData(JSON.parse(String(reader.result || "")));
+            if (!window.confirm("导入会替换当前本机数据，继续吗？")) {
+              elements.importJsonInput.value = "";
+              return;
+            }
+
+            state.data = nextData;
+            state.ui.editingId = null;
+            saveData();
+            elements.importJsonInput.value = "";
+            setMessage("已导入 JSON，并替换当前数据。", "success");
+            renderAll();
+          } catch (error) {
+            elements.importJsonInput.value = "";
+            setMessage(`导入失败：${error.message}`, "error");
+          }
+        };
+        reader.onerror = () => {
+          elements.importJsonInput.value = "";
+          setMessage("无法读取选择的文件。", "error");
+        };
+        reader.readAsText(file);
+      }
+
+      function exportSvg() {
+        const context = getLifeContext();
+        const projected = getProjectedMilestones(context);
+        const svg = buildSvg(context, projected);
+        downloadBlob(svg, "image/svg+xml;charset=utf-8", `life-in-pixels-${todayFileStamp()}.svg`);
+        setMessage("已导出 SVG 海报。", "success");
+      }
+
+      function downloadBlob(content, type, filename) {
+        const blob = new Blob([content], { type });
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+        anchor.href = url;
+        anchor.download = filename;
+        document.body.appendChild(anchor);
+        anchor.click();
+        anchor.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      function todayFileStamp() {
+        const now = new Date();
+        return `${now.getFullYear()}-${padMonth(now.getMonth() + 1)}-${padMonth(now.getDate())}`;
+      }
+
+      function clearAllData() {
+        if (!window.confirm("清空当前页面里的所有人生地图数据？")) {
+          return;
+        }
+
+        if (!window.confirm("此操作只会清空本机浏览器数据。请确认已经导出 JSON 备份。")) {
+          return;
+        }
+
+        localStorage.removeItem(STORAGE_KEY);
+        state.data = cloneData(DEFAULT_DATA);
+        state.ui.editingId = null;
+        setSaveStatus("已清空本机数据");
+        setMessage("已清空数据。", "success");
+        resetNewEventForm();
+        renderAll();
+      }
+
+      function buildSvg(context, projected) {
+        const selection = getPosterSelection(projected, false);
+        const groups = context.hasBirth ? groupByCell(selection.displayed) : getDemoGroups();
+        const title = state.data.profile.title.trim() || (context.hasBirth ? "我的人生地图" : "Life in Pixels");
+        const subtitle = context.hasBirth
+          ? `出生：${state.data.profile.birthMonth} · ${TOTAL_YEARS} 年 · ${TOTAL_MONTHS} 个月`
+          : "设置出生年月后生成个人地图；当前预览为非持久化示意。";
+        const metricValues = context.hasBirth
+          ? [
+              [String(context.elapsedMonths), "已走过"],
+              [String(context.remainingMonths), "未来月份"],
+              [`${Math.round(context.progress * 1000) / 10}%`, "已走过比例"],
+              [String(projected.filter((item) => item.valid).length), "事件"],
+            ]
+          : [["--", "已走过"], ["--", "未来月份"], ["--", "已走过比例"], ["0", "事件"]];
+
+        const width = 2100;
+        const height = 2970;
+        const margin = 110;
+        const headerY = 120;
+        const metricY = 315;
+        const noteY = 462;
+        const gridX = 150;
+        const gridY = 555;
+        const gridW = 1320;
+        const cellGap = 5;
+        const cellSize = (gridW - cellGap * (GRID_COLUMNS - 1)) / GRID_COLUMNS;
+        const gridH = cellSize * GRID_ROWS + cellGap * (GRID_ROWS - 1);
+        const sideX = 1500;
+        const sideW = 480;
+        const parts = [];
+
+        parts.push(`<svg xmlns="http://www.w3.org/2000/svg" width="210mm" height="297mm" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(title)}">`);
+        parts.push(`<rect width="${width}" height="${height}" fill="#fffdf8"/>`);
+        parts.push(`<text x="${margin}" y="${headerY}" fill="#bd7d3a" font-size="32" font-weight="800" letter-spacing="5">LIFE IN PIXELS</text>`);
+        parts.push(`<text x="${margin}" y="${headerY + 82}" fill="#18212b" font-size="72" font-family="Songti SC, STSong, Georgia, serif" font-weight="700">${escapeHtml(title)}</text>`);
+        parts.push(`<text x="${margin}" y="${headerY + 132}" fill="#69717c" font-size="30">${escapeHtml(subtitle)}</text>`);
+        parts.push(`<line x1="${margin}" y1="280" x2="${width - margin}" y2="280" stroke="#ded7ca" stroke-width="3"/>`);
+
+        metricValues.forEach((metric, index) => {
+          const x = margin + index * 450;
+          parts.push(`<rect x="${x}" y="${metricY}" width="405" height="105" rx="16" fill="#ffffff" stroke="#ded7ca" stroke-width="3"/>`);
+          parts.push(`<text x="${x + 28}" y="${metricY + 48}" fill="#18212b" font-size="36" font-weight="800">${escapeHtml(metric[0])}</text>`);
+          parts.push(`<text x="${x + 28}" y="${metricY + 82}" fill="#69717c" font-size="23" font-weight="700">${escapeHtml(metric[1])}</text>`);
+        });
+
+        parts.push(`<text x="${margin}" y="${noteY}" fill="#69717c" font-size="24" font-weight="650">这些数字不是倒计时，而是帮助你看见时间如何被经历、记录和安排。</text>`);
+
+        const monthAxis = [
+          [1, "1月"],
+          [6, "6月"],
+          [12, "12月"],
+          [18, "18月"],
+          [24, "24月"],
+        ];
+        monthAxis.forEach(([month, label]) => {
+          const x = gridX + (month - 1) * (cellSize + cellGap) + cellSize / 2;
+          parts.push(`<text x="${round(x)}" y="${gridY - 24}" text-anchor="middle" fill="#8d96a1" font-size="20" font-weight="850">${label}</text>`);
+        });
+
+        for (let age = 0; age <= TOTAL_YEARS; age += 10) {
+          const row = age >= TOTAL_YEARS ? GRID_ROWS - 1 : Math.floor((age * 12) / GRID_COLUMNS);
+          const y = gridY + row * (cellSize + cellGap) + cellSize / 2 + 7;
+          parts.push(`<text x="${gridX - 34}" y="${round(y)}" text-anchor="end" fill="#8d96a1" font-size="20" font-weight="850">${age}岁</text>`);
+        }
+
+        for (let row = 0; row < GRID_ROWS; row += 1) {
+          for (let col = 0; col < GRID_COLUMNS; col += 1) {
+            const cellNumber = row * GRID_COLUMNS + col + 1;
+            const milestones = groups.get(cellNumber) || [];
+            const firstMilestone = milestones[0];
+            const category = firstMilestone ? categoryById(firstMilestone.category) : null;
+            const fill = firstMilestone ? category.color : context.hasBirth && cellNumber <= context.elapsedMonths ? "#d4d8dc" : "#fffdf8";
+            const stroke = context.currentCell === cellNumber ? "#1d2a35" : firstMilestone ? "#7c6f62" : "#ded7ca";
+            const dash = firstMilestone && milestones.some((item) => item.status === "planned") ? ' stroke-dasharray="8 5"' : "";
+            const x = gridX + col * (cellSize + cellGap);
+            const y = gridY + row * (cellSize + cellGap);
+            const label = gridCellLabel(milestones);
+
+            parts.push(`<rect x="${round(x)}" y="${round(y)}" width="${round(cellSize)}" height="${round(cellSize)}" fill="${fill}" stroke="${stroke}" stroke-width="${context.currentCell === cellNumber ? 4 : 2}"${dash}/>`);
+            if (label) {
+              parts.push(`<text x="${round(x + cellSize / 2)}" y="${round(y + cellSize / 2 + 6)}" text-anchor="middle" fill="#18212b" font-size="18" font-weight="800">${escapeHtml(label)}</text>`);
+            }
+          }
+        }
+
+        const hasCategoryLegend = selection.displayed.length > 0;
+        const legendItems = hasCategoryLegend ? CATEGORIES : STATUS_LEGEND;
+        const legendColumns = hasCategoryLegend ? 3 : 2;
+        const legendH = hasCategoryLegend ? 250 : 170;
+        const legendCellW = hasCategoryLegend ? 145 : 210;
+
+        parts.push(`<rect x="${sideX}" y="${gridY}" width="${sideW}" height="${legendH}" rx="16" fill="#ffffff" stroke="#ded7ca" stroke-width="3"/>`);
+        parts.push(`<text x="${sideX + 26}" y="${gridY + 48}" fill="#303943" font-size="26" font-weight="900">图例</text>`);
+        legendItems.forEach((item, index) => {
+          const col = index % legendColumns;
+          const row = Math.floor(index / legendColumns);
+          const x = sideX + 26 + col * legendCellW;
+          const y = gridY + 91 + row * 43;
+          parts.push(`<rect x="${x}" y="${y - 19}" width="20" height="20" rx="4" fill="${item.color}" stroke="#8d8376" stroke-width="2"/>`);
+          parts.push(`<text x="${x + 30}" y="${y - 2}" fill="#69717c" font-size="19" font-weight="700">${item.label}</text>`);
+        });
+
+        const indexY = gridY + legendH + 40;
+        parts.push(`<rect x="${sideX}" y="${indexY}" width="${sideW}" height="${gridH - 400}" rx="16" fill="#ffffff" stroke="#ded7ca" stroke-width="3"/>`);
+        parts.push(`<text x="${sideX + 26}" y="${indexY + 48}" fill="#303943" font-size="26" font-weight="900">事件索引</text>`);
+        parts.push(`<text x="${sideX + sideW - 26}" y="${indexY + 48}" fill="#69717c" font-size="22" font-weight="800" text-anchor="end">${selection.displayed.length} / ${POSTER_EVENT_LIMIT}</text>`);
+
+        if (selection.displayed.length === 0) {
+          parts.push(`<text x="${sideX + 26}" y="${indexY + 98}" fill="#69717c" font-size="22">暂无可显示事件</text>`);
+        } else {
+          selection.displayed.forEach((milestone, index) => {
+            const category = categoryById(milestone.category);
+            const y = indexY + 94 + index * 54;
+            const status = milestone.status === "planned" ? "计划" : "已发生";
+            parts.push(`<circle cx="${sideX + 38}" cy="${y - 8}" r="18" fill="${category.color}" stroke="#8d8376" stroke-width="2"/>`);
+            parts.push(`<text x="${sideX + 38}" y="${y}" fill="#18212b" font-size="16" font-weight="900" text-anchor="middle">${milestone.posterIndex}</text>`);
+            parts.push(`<text x="${sideX + 68}" y="${y - 11}" fill="#303943" font-size="20" font-weight="850">${escapeHtml(truncateSvgText(milestone.name, 15))}</text>`);
+            parts.push(`<text x="${sideX + 68}" y="${y + 18}" fill="#69717c" font-size="16">${milestone.month} · ${category.label} · ${status}</text>`);
+          });
+        }
+
+        if (selection.hiddenCount > 0) {
+          parts.push(`<text x="${sideX}" y="${gridY + gridH + 46}" fill="#a84f4f" font-size="18" font-weight="800">已选 ${selection.selected.length} 个事件，仅显示前 ${POSTER_EVENT_LIMIT} 个。</text>`);
+        }
+
+        parts.push("</svg>");
+        return parts.join("");
+      }
+
+      function truncateSvgText(text, maxLength) {
+        const value = String(text || "");
+        return value.length > maxLength ? `${value.slice(0, maxLength - 1)}…` : value;
+      }
+
+      function round(value) {
+        return Math.round(value * 100) / 100;
+      }
+
+      function showTooltip(event, cell) {
+        elements.tooltip.innerHTML = cell.dataset.tooltip || "";
+        elements.tooltip.classList.add("visible");
+        moveTooltip(event);
+      }
+
+      function moveTooltip(event) {
+        if (!elements.tooltip.classList.contains("visible")) {
+          return;
+        }
+
+        const spacing = 14;
+        const rect = elements.tooltip.getBoundingClientRect();
+        let left = event.clientX + spacing;
+        let top = event.clientY + spacing;
+
+        if (left + rect.width > window.innerWidth - spacing) {
+          left = event.clientX - rect.width - spacing;
+        }
+
+        if (top + rect.height > window.innerHeight - spacing) {
+          top = event.clientY - rect.height - spacing;
+        }
+
+        elements.tooltip.style.left = `${Math.max(spacing, left)}px`;
+        elements.tooltip.style.top = `${Math.max(spacing, top)}px`;
+      }
+
+      function hideTooltip() {
+        elements.tooltip.classList.remove("visible");
+      }
+
+      function initialize() {
+        renderCategoryOptions();
+        renderFilters();
+        loadData();
+        resetNewEventForm();
+        bindEvents();
+        renderAll();
+      }
+
+      function bindEvents() {
+        elements.mapTitle.addEventListener("input", (event) => updateProfile("title", event.target.value));
+        elements.birthMonth.addEventListener("input", (event) => updateProfile("birthMonth", event.target.value));
+        elements.newEventForm.addEventListener("submit", addMilestoneFromForm);
+        elements.resetNewEvent.addEventListener("click", () => {
+          resetNewEventForm();
+          setMessage("", "info");
+        });
+        elements.filterGrid.addEventListener("change", (event) => {
+          const input = event.target.closest("input[type='checkbox']");
+          if (!input) {
+            return;
+          }
+
+          if (input.checked) {
+            state.ui.activeCategories.add(input.value);
+          } else {
+            state.ui.activeCategories.delete(input.value);
+          }
+
+          renderAll();
+        });
+        elements.eventList.addEventListener("click", handleEventListClick);
+        elements.exportJsonButton.addEventListener("click", exportJson);
+        elements.importJsonButton.addEventListener("click", () => elements.importJsonInput.click());
+        elements.importJsonInput.addEventListener("change", (event) => {
+          const file = event.target.files && event.target.files[0];
+          if (file) {
+            importJsonFile(file);
+          }
+        });
+        elements.exportSvgButton.addEventListener("click", exportSvg);
+        elements.exportSvgButtonTop.addEventListener("click", exportSvg);
+        elements.clearDataButton.addEventListener("click", clearAllData);
+        elements.printButton.addEventListener("click", () => window.print());
+        elements.lifeGrid.addEventListener("pointerover", (event) => {
+          const cell = event.target.closest(".life-cell");
+          if (cell) {
+            showTooltip(event, cell);
+          }
+        });
+        elements.lifeGrid.addEventListener("pointermove", moveTooltip);
+        elements.lifeGrid.addEventListener("pointerout", (event) => {
+          if (!event.relatedTarget || !event.relatedTarget.closest || !event.relatedTarget.closest(".life-cell")) {
+            hideTooltip();
+          }
+        });
+        elements.lifeGrid.addEventListener("focusin", (event) => {
+          const cell = event.target.closest(".life-cell");
+          if (!cell) {
+            return;
+          }
+
+          const rect = cell.getBoundingClientRect();
+          showTooltip({ clientX: rect.left + rect.width / 2, clientY: rect.bottom }, cell);
+        });
+        elements.lifeGrid.addEventListener("focusout", hideTooltip);
+        window.addEventListener("beforeprint", () => renderAll({ forceOutput: true }));
+        window.addEventListener("afterprint", () => renderAll());
+      }
+
+      initialize();
+    </script>
+  </body>
+</html>
