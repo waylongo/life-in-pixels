@@ -1,5 +1,7 @@
 # Life in Pixels
 
+[在线访问](https://waylongo.github.io/life-in-pixels/)
+
 把人生摊成一张 A4 纸。
 
 960 个格子，每格一个月。它不试图解释人生，只把时间放到眼前：已经走过的、正在发生的、尚未抵达的，都安静地占据自己的位置。
